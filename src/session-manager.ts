@@ -23,8 +23,8 @@ const CLAUDE_APP_PATH = "/Applications/Claude.app";
 const AIDECK_CONFIG_PATH = path.join(
 	os.homedir(),
 	".claude",
-	"aideck",
-	"config.json",
+	"hooks",
+	"aideck.json",
 );
 
 type GlobalSettings = {

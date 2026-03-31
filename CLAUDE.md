@@ -57,7 +57,7 @@ No polling timer, no file watcher. Refresh is triggered solely by ntfy messages.
 
 ### Hook Script (`hooks/aideck.sh`)
 
-Bash script invoked by Claude Code on SessionStart, UserPromptSubmit, Stop, PreCompact, PostCompact, Notification, and SessionEnd events. Receives JSON on stdin, reads ntfy topic from `~/.claude/aideck/config.json`, and pushes session state to ntfy. Also resolves the remote session URL and custom session name from JSONL transcripts. Installed via `~/.claude/settings.json` hook configuration.
+Bash script invoked by Claude Code on SessionStart, UserPromptSubmit, Stop, PreCompact, PostCompact, Notification, and SessionEnd events. Receives JSON on stdin, reads ntfy topic from `~/.claude/hooks/aideck.json`, and pushes session state to ntfy. Also resolves the remote session URL and custom session name from JSONL transcripts. Installed via `~/.claude/settings.json` hook configuration.
 
 **Hook gotchas:**
 - Hook input only provides `session_id`, `cwd`, `transcript_path`, `hook_event_name` — no `session_name` or remote URL. Those must come from the transcript.
@@ -65,7 +65,7 @@ Bash script invoked by Claude Code on SessionStart, UserPromptSubmit, Stop, PreC
 - Grep patterns must be specific (e.g. `'"subtype":"bridge_status"'` not `'"bridge_status"'`) to avoid matching embedded command strings in the transcript.
 - Compaction destroys `bridge_status` and `custom-title` entries. The plugin's `handleMessage` merges instead of overwrites — once a remoteUrl or summary is received, it persists in the cache even if subsequent events lack it.
 - Never search sibling transcripts for bridge_status — it picks up wrong sessions' URLs. Only use the current session's transcript.
-- `config.json` is written by the plugin (from Stream Deck settings) and read by the hook. Don't write it with empty values — guard with `if (!topic) return`.
+- `~/.claude/hooks/aideck.json` is written by the plugin (from Stream Deck settings) and read by the hook. Don't write it with empty values — guard with `if (!topic) return`. Lives in hooks folder so it syncs to remote sandboxes.
 
 ### Stream Deck Panel Layout (Standard 5×3)
 

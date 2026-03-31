@@ -12,7 +12,7 @@ for cmd in jq curl; do
   fi
 done
 
-CONFIG_FILE="$HOME/.claude/aideck/config.json"
+CONFIG_FILE="$HOME/.claude/hooks/aideck.json"
 [ -f "$CONFIG_FILE" ] || exit 0
 
 # Read hook input from stdin

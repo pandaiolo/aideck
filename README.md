@@ -104,7 +104,7 @@ Remote Claude Code instances push session state to [ntfy.sh](https://ntfy.sh) â€
    echo "aideck-$(openssl rand -hex 8)"
    ```
 
-2. On your Mac, create `~/.claude/aideck/config.json`:
+2. On your Mac, create `~/.claude/hooks/aideck.json`:
    ```json
    {
      "topic": "aideck-your-random-topic-here"
@@ -133,7 +133,7 @@ For better privacy, self-host ntfy:
 docker run -p 8080:80 binwiederhier/ntfy serve
 ```
 
-Then set the URL in `~/.claude/aideck/config.json`:
+Then set the URL in `~/.claude/hooks/aideck.json`:
 ```json
 {
   "topic": "aideck-your-topic",
@@ -149,12 +149,12 @@ And on remote servers: `export AIDECK_NTFY_URL="http://your-server:8080"`
 
 - Verify the hook script is executable: `ls -la ~/.claude/hooks/aideck.sh`
 - Check that hooks are configured: `cat ~/.claude/settings.local.json`
-- Look for state files: `ls ~/.claude/aideck/`
+- Check hook config: `cat ~/.claude/hooks/aideck.json`
 - Check plugin logs: `~/Library/Logs/ElgatoStreamDeck/com.aideck.aideck.*.log` or via Stream Deck app > More... > Logs
 
 ### Remote sessions don't appear
 
-- Verify `~/.claude/aideck/config.json` has the correct topic
+- Verify `~/.claude/hooks/aideck.json` has the correct topic
 - Test ntfy connectivity: `curl -s "https://ntfy.sh/YOUR_TOPIC/json?poll=1"`
 - Ensure `AIDECK_NTFY_TOPIC` is set on the remote server
 - Check that `jq` and `curl` are installed on the remote server
