@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>AIDeck Settings</title>
+	<style>
+		body {
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+			font-size: 12px;
+			color: #ccc;
+			background: #2d2d2d;
+			margin: 0;
+			padding: 12px;
+		}
+		.setting {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 8px 0;
+		}
+		.color-setting {
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			padding: 4px 0;
+		}
+		input[type="checkbox"] {
+			width: 16px;
+			height: 16px;
+			cursor: pointer;
+		}
+		input[type="color"] {
+			width: 32px;
+			height: 24px;
+			border: 1px solid #555;
+			border-radius: 4px;
+			background: none;
+			cursor: pointer;
+			padding: 0;
+		}
+		label {
+			cursor: pointer;
+			user-select: none;
+		}
+		select, input[type="text"] {
+			background: #3a3a3a;
+			color: #ccc;
+			border: 1px solid #555;
+			border-radius: 4px;
+			padding: 4px 8px;
+			font-size: 12px;
+			width: 100%;
+			box-sizing: border-box;
+		}
+		select {
+			cursor: pointer;
+		}
+		input[type="text"]::placeholder {
+			color: #777;
+		}
+		h3 {
+			margin: 12px 0 4px;
+			font-size: 11px;
+			color: #999;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+		}
+	</style>
+</head>
+<body>
+	<div class="setting">
+		<input type="checkbox" id="openInDesktop" checked />
+		<label for="openInDesktop">Open sessions in Claude Desktop if available</label>
+	</div>
+	<div class="setting">
+		<input type="checkbox" id="singlePanel" />
+		<label for="singlePanel">Single panel (hide nav buttons)</label>
+	</div>
+
+	<div class="setting">
+		<label for="fontSize">Font size</label>
+		<select id="fontSize">
+			<option value="small">Small (3 lines)</option>
+			<option value="medium">Medium (2 lines)</option>
+			<option value="large">Large (1 line)</option>
+		</select>
+	</div>
+
+	<h3>ntfy</h3>
+	<div class="setting">
+		<label for="ntfyTopic">Topic</label>
+		<input type="text" id="ntfyTopic" placeholder="your-secret-topic" />
+	</div>
+	<div class="setting">
+		<label for="ntfyUrl">Server URL</label>
+		<input type="text" id="ntfyUrl" placeholder="https://ntfy.sh" />
+	</div>
+
+	<h3>Status colors</h3>
+	<div class="color-setting">
+		<input type="color" id="colorAwaiting" value="#4CAF50" />
+		<label for="colorAwaiting">Awaiting input</label>
+	</div>
+	<div class="color-setting">
+		<input type="color" id="colorWorking" value="#FFA726" />
+		<label for="colorWorking">Working</label>
+	</div>
+	<div class="color-setting">
+		<input type="color" id="colorInactive" value="#555555" />
+		<label for="colorInactive">Inactive</label>
+	</div>
+
+	<script>
+		const checkbox = document.getElementById("openInDesktop");
+		const singlePanelCb = document.getElementById("singlePanel");
+		const fontSizeSelect = document.getElementById("fontSize");
+		const ntfyTopicInput = document.getElementById("ntfyTopic");
+		const ntfyUrlInput = document.getElementById("ntfyUrl");
+		const colorAwaiting = document.getElementById("colorAwaiting");
+		const colorWorking = document.getElementById("colorWorking");
+		const colorInactive = document.getElementById("colorInactive");
+
+		let ws;
+		let uuid;
+		let currentSettings = {};
+
+		function connectElgatoStreamDeckSocket(inPort, inPluginUUID, inRegisterEvent, inInfo) {
+			uuid = inPluginUUID;
+
+			ws = new WebSocket("ws://127.0.0.1:" + inPort);
+
+			ws.onopen = function () {
+				ws.send(JSON.stringify({ event: inRegisterEvent, uuid: uuid }));
+				ws.send(JSON.stringify({ event: "getGlobalSettings", context: uuid }));
+			};
+
+			ws.onmessage = function (evt) {
+				const data = JSON.parse(evt.data);
+				if (data.event === "didReceiveGlobalSettings") {
+					currentSettings = data.payload.settings || {};
+					checkbox.checked = currentSettings.openInDesktop !== false;
+					singlePanelCb.checked = currentSettings.singlePanel === true;
+					fontSizeSelect.value = currentSettings.fontSize || "small";
+					ntfyTopicInput.value = currentSettings.ntfyTopic || "";
+					ntfyUrlInput.value = currentSettings.ntfyUrl || "https://ntfy.sh";
+					colorAwaiting.value = currentSettings.colorAwaiting || "#4CAF50";
+					colorWorking.value = currentSettings.colorWorking || "#FFA726";
+					colorInactive.value = currentSettings.colorInactive || "#555555";
+				}
+			};
+		}
+
+		function saveSettings() {
+			if (ws && ws.readyState === WebSocket.OPEN) {
+				currentSettings.openInDesktop = checkbox.checked;
+				currentSettings.singlePanel = singlePanelCb.checked;
+				currentSettings.fontSize = fontSizeSelect.value;
+				currentSettings.ntfyTopic = ntfyTopicInput.value;
+				currentSettings.ntfyUrl = ntfyUrlInput.value;
+				currentSettings.colorAwaiting = colorAwaiting.value;
+				currentSettings.colorWorking = colorWorking.value;
+				currentSettings.colorInactive = colorInactive.value;
+				ws.send(JSON.stringify({
+					event: "setGlobalSettings",
+					context: uuid,
+					payload: currentSettings
+				}));
+			}
+		}
+
+		checkbox.addEventListener("change", saveSettings);
+		singlePanelCb.addEventListener("change", saveSettings);
+		fontSizeSelect.addEventListener("change", saveSettings);
+		ntfyTopicInput.addEventListener("change", saveSettings);
+		ntfyUrlInput.addEventListener("change", saveSettings);
+		colorAwaiting.addEventListener("input", saveSettings);
+		colorWorking.addEventListener("input", saveSettings);
+		colorInactive.addEventListener("input", saveSettings);
+	</script>
+</body>
+</html>

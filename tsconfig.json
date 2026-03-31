@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"target": "ES2022",
+		"module": "ES2022",
+		"moduleResolution": "bundler",
+		"declaration": true,
+		"strict": true,
+		"experimentalDecorators": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"outDir": "com.aideck.aideck.sdPlugin/bin",
+		"rootDir": "src",
+		"lib": ["ES2022"]
+	},
+	"include": ["src/**/*"]
+}

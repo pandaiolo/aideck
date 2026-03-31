@@ -1,0 +1,97 @@
+{
+	"$schema": "https://schemas.elgato.com/streamdeck/plugins/manifest.json",
+	"UUID": "com.aideck.aideck",
+	"Name": "AIDeck",
+	"Author": "Aurelien",
+	"Description": "Claude Code sessions on your Stream Deck",
+	"Version": "1.0.0.0",
+	"CodePath": "bin/plugin.js",
+	"Icon": "imgs/plugin-icon",
+	"Category": "AIDeck",
+	"CategoryIcon": "imgs/category-icon",
+	"SDKVersion": 2,
+	"Software": {
+		"MinimumVersion": "6.7"
+	},
+	"Nodejs": {
+		"Version": "20",
+		"Debug": "enabled"
+	},
+	"OS": [
+		{
+			"Platform": "mac",
+			"MinimumVersion": "13"
+		}
+	],
+	"Actions": [
+		{
+			"UUID": "com.aideck.aideck.open-panel",
+			"Name": "AIDeck Panel",
+			"Icon": "imgs/actions/open-panel/icon",
+			"Tooltip": "Open the AIDeck panel showing Claude Code sessions",
+			"PropertyInspectorPath": "ui/property-inspector.html",
+			"Controllers": ["Keypad"],
+			"States": [
+				{
+					"Image": "imgs/actions/open-panel/key",
+					"ShowTitle": false
+				}
+			],
+			"VisibleInActionsList": true
+		},
+		{
+			"UUID": "com.aideck.aideck.back",
+			"Name": "AIDeck Back",
+			"Icon": "imgs/actions/back/icon",
+			"Tooltip": "Return to previous profile",
+			"PropertyInspectorPath": "ui/property-inspector.html",
+			"Controllers": ["Keypad"],
+			"States": [
+				{
+					"Image": "imgs/actions/back/key",
+					"ShowTitle": false
+				}
+			],
+			"VisibleInActionsList": false
+		},
+		{
+			"UUID": "com.aideck.aideck.session-slot",
+			"Name": "Session Slot",
+			"Icon": "imgs/actions/session-slot/icon",
+			"Tooltip": "Displays a Claude Code session",
+			"PropertyInspectorPath": "ui/property-inspector.html",
+			"Controllers": ["Keypad"],
+			"States": [
+				{
+					"Image": "imgs/actions/session-slot/key",
+					"ShowTitle": false
+				}
+			],
+			"VisibleInActionsList": false
+		},
+		{
+			"UUID": "com.aideck.aideck.page-nav",
+			"Name": "Page Navigation",
+			"Icon": "imgs/actions/page-nav/icon",
+			"Tooltip": "Navigate between session pages",
+			"PropertyInspectorPath": "ui/property-inspector.html",
+			"Controllers": ["Keypad"],
+			"States": [
+				{
+					"Image": "imgs/actions/page-nav/key",
+					"ShowTitle": false
+				}
+			],
+			"VisibleInActionsList": false
+		}
+	],
+	"Profiles": [
+		{
+			"Name": "profiles/aideck-panel",
+			"DeviceType": 0,
+			"AutoInstall": true,
+			"DontAutoSwitchWhenInstalled": true,
+			"Readonly": false
+		}
+	]
+}

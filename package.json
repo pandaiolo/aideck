@@ -1,0 +1,36 @@
+{
+	"name": "com.aideck.aideck",
+	"version": "1.0.0",
+	"description": "Claude Code sessions on your Stream Deck",
+	"license": "MIT",
+	"author": "Aurélien Music (https://github.com/pandaiolo)",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pandaiolo/aideck.git"
+	},
+	"homepage": "https://github.com/pandaiolo/aideck",
+	"type": "module",
+	"main": "com.aideck.aideck.sdPlugin/bin/plugin.js",
+	"scripts": {
+		"build": "rollup -c --environment BUILD:production",
+		"watch": "rollup -c -w --watch.onEnd=\"streamdeck restart com.aideck.aideck\"",
+		"test": "vitest run",
+		"test:watch": "vitest",
+		"test:coverage": "vitest run --coverage",
+		"lint": "biome check src/",
+		"lint:fix": "biome check --write src/",
+		"format": "biome format --write src/"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.10",
+		"@elgato/streamdeck": "^2.0.0",
+		"@rollup/plugin-commonjs": "^29.0.2",
+		"@rollup/plugin-node-resolve": "^16.0.0",
+		"@rollup/plugin-typescript": "^12.0.0",
+		"@types/node": "^25.5.0",
+		"rollup": "^4.0.0",
+		"tslib": "^2.7.0",
+		"typescript": "^5.6.0",
+		"vitest": "^4.1.2"
+	}
+}

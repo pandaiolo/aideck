@@ -1,0 +1,124 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`backKeySvg > snapshot 1`] = `
+"<svg width="144" height="144" xmlns="http://www.w3.org/2000/svg">
+  <rect width="144" height="144" rx="28" fill="#16213e"/>
+  <path d="M88 38 L52 72 L88 106" stroke="#eee" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>"
+`;
+
+exports[`emptyKeySvg > snapshot 1`] = `
+"<svg width="144" height="144" xmlns="http://www.w3.org/2000/svg">
+  <rect width="144" height="144" rx="28" fill="#1a1a2e"/>
+</svg>"
+`;
+
+exports[`navKeySvg > snapshot: NEXT disabled 1`] = `
+"<svg width="144" height="144" xmlns="http://www.w3.org/2000/svg">
+  <rect width="144" height="144" rx="28" fill="#1a1a2e"/>
+  <path d="M56 48 L88 72 L56 96" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>"
+`;
+
+exports[`navKeySvg > snapshot: NEXT enabled 1`] = `
+"<svg width="144" height="144" xmlns="http://www.w3.org/2000/svg">
+  <rect width="144" height="144" rx="28" fill="#16213e"/>
+  <path d="M56 48 L88 72 L56 96" stroke="#eee" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>"
+`;
+
+exports[`navKeySvg > snapshot: PREV disabled 1`] = `
+"<svg width="144" height="144" xmlns="http://www.w3.org/2000/svg">
+  <rect width="144" height="144" rx="28" fill="#1a1a2e"/>
+  <path d="M88 48 L56 72 L88 96" stroke="#555" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>"
+`;
+
+exports[`navKeySvg > snapshot: PREV enabled 1`] = `
+"<svg width="144" height="144" xmlns="http://www.w3.org/2000/svg">
+  <rect width="144" height="144" rx="28" fill="#16213e"/>
+  <path d="M88 48 L56 72 L88 96" stroke="#eee" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>"
+`;
+
+exports[`openPanelKeySvg > snapshot: mixed counts 1`] = `
+"<svg width="144" height="144" xmlns="http://www.w3.org/2000/svg">
+  <rect width="144" height="144" rx="28" fill="#1a1a2e"/>
+  <text x="72" y="55" text-anchor="middle" fill="#e94560" font-size="40" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="bold">AI</text>
+  <text x="72" y="80" text-anchor="middle" fill="#eee" font-size="28" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">Deck</text>
+  
+    <rect x="14" y="98" width="36" height="24" rx="12" fill="#FFA726"/>
+    <text x="32" y="115" text-anchor="middle" fill="#000" font-size="15" font-weight="700" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">3</text>
+    <rect x="54" y="98" width="36" height="24" rx="12" fill="#4CAF50"/>
+    <text x="72" y="115" text-anchor="middle" fill="#000" font-size="15" font-weight="700" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">2</text>
+    <rect x="94" y="98" width="36" height="24" rx="12" fill="#555555"/>
+    <text x="112" y="115" text-anchor="middle" fill="#fff" font-size="15" font-weight="700" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">5</text>
+</svg>"
+`;
+
+exports[`openPanelKeySvg > snapshot: no activity 1`] = `
+"<svg width="144" height="144" xmlns="http://www.w3.org/2000/svg">
+  <rect width="144" height="144" rx="28" fill="#1a1a2e"/>
+  <text x="72" y="60" text-anchor="middle" fill="#e94560" font-size="40" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-weight="bold">AI</text>
+  <text x="72" y="100" text-anchor="middle" fill="#eee" font-size="28" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">Deck</text>
+  
+</svg>"
+`;
+
+exports[`sessionKeySvg > snapshot: awaiting_input, medium font, no branch 1`] = `
+"<svg width="144" height="144" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fade" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0.82" stop-color="white"/>
+      <stop offset="1" stop-color="black"/>
+    </linearGradient>
+    <mask id="m"><rect width="144" height="144" rx="28" fill="url(#fade)"/></mask>
+  </defs>
+  <rect width="144" height="144" rx="28" fill="#243835"/>
+  <rect x="0" y="0" width="144" height="144" rx="28" stroke="#4CAF50" stroke-width="4" fill="none"/>
+  <g mask="url(#m)">
+  <text x="16" y="34" fill="#eee" font-size="24" font-weight="700" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">project</text>
+  
+  <text x="16" y="68" fill="#eee" font-size="21" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">waiting for</text>
+  <text x="16" y="94" fill="#eee" font-size="21" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">input</text>
+  </g>
+</svg>"
+`;
+
+exports[`sessionKeySvg > snapshot: inactive, large font 1`] = `
+"<svg width="144" height="144" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fade" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0.82" stop-color="white"/>
+      <stop offset="1" stop-color="black"/>
+    </linearGradient>
+    <mask id="m"><rect width="144" height="144" rx="28" fill="url(#fade)"/></mask>
+  </defs>
+  <rect width="144" height="144" rx="28" fill="#1a1a2e"/>
+  
+  <g mask="url(#m)">
+  <text x="16" y="40" fill="#eee" font-size="30" font-weight="700" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">bigproj</text>
+  <text x="16" y="74" fill="#aaa" font-size="22" font-weight="500" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">dev</text>
+  <text x="16" y="108" fill="#eee" font-size="26" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">old</text>
+  </g>
+</svg>"
+`;
+
+exports[`sessionKeySvg > snapshot: working, small font, with branch 1`] = `
+"<svg width="144" height="144" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fade" x1="0" x2="1" y1="0" y2="0">
+      <stop offset="0.82" stop-color="white"/>
+      <stop offset="1" stop-color="black"/>
+    </linearGradient>
+    <mask id="m"><rect width="144" height="144" rx="28" fill="url(#fade)"/></mask>
+  </defs>
+  <rect width="144" height="144" rx="28" fill="#48362c"/>
+  <rect x="0" y="0" width="144" height="144" rx="28" stroke="#FFA726" stroke-width="4" fill="none"/>
+  <g mask="url(#m)">
+  <text x="16" y="30" fill="#eee" font-size="20" font-weight="700" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">aideck</text>
+  <text x="16" y="56" fill="#aaa" font-size="16" font-weight="500" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">main</text>
+  <text x="16" y="80" fill="#eee" font-size="17" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">fix tests</text>
+  </g>
+</svg>"
+`;
