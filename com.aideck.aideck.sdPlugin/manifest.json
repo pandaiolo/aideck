@@ -9,9 +9,9 @@
 	"Icon": "imgs/plugin-icon",
 	"Category": "AIDeck",
 	"CategoryIcon": "imgs/category-icon",
-	"SDKVersion": 2,
+	"SDKVersion": 3,
 	"Software": {
-		"MinimumVersion": "6.7"
+		"MinimumVersion": "6.9"
 	},
 	"Nodejs": {
 		"Version": "20",
@@ -30,7 +30,9 @@
 			"Icon": "imgs/actions/open-panel/icon",
 			"Tooltip": "Open the AIDeck panel showing Claude Code sessions",
 			"PropertyInspectorPath": "ui/property-inspector.html",
-			"Controllers": ["Keypad"],
+			"Controllers": [
+				"Keypad"
+			],
 			"States": [
 				{
 					"Image": "imgs/actions/open-panel/key",
@@ -45,7 +47,9 @@
 			"Icon": "imgs/actions/back/icon",
 			"Tooltip": "Return to previous profile",
 			"PropertyInspectorPath": "ui/property-inspector.html",
-			"Controllers": ["Keypad"],
+			"Controllers": [
+				"Keypad"
+			],
 			"States": [
 				{
 					"Image": "imgs/actions/back/key",
@@ -60,7 +64,9 @@
 			"Icon": "imgs/actions/session-slot/icon",
 			"Tooltip": "Displays a Claude Code session",
 			"PropertyInspectorPath": "ui/property-inspector.html",
-			"Controllers": ["Keypad"],
+			"Controllers": [
+				"Keypad"
+			],
 			"States": [
 				{
 					"Image": "imgs/actions/session-slot/key",
@@ -75,7 +81,9 @@
 			"Icon": "imgs/actions/page-nav/icon",
 			"Tooltip": "Navigate between session pages",
 			"PropertyInspectorPath": "ui/property-inspector.html",
-			"Controllers": ["Keypad"],
+			"Controllers": [
+				"Keypad"
+			],
 			"States": [
 				{
 					"Image": "imgs/actions/page-nav/key",

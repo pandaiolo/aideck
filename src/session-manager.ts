@@ -4,6 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import streamDeck from "@elgato/streamdeck";
 import type { ActionLike } from "./actions/utils";
+import { generateTopic, PLUGIN_DIR } from "./hook-installer";
 import { ntfySubscriber } from "./ntfy";
 import {
 	DEFAULT_COLORS,
@@ -88,7 +89,11 @@ class SessionManager {
 		try {
 			const dir = path.dirname(AIDECK_CONFIG_PATH);
 			fs.mkdirSync(dir, { recursive: true });
-			const config = { topic: this.ntfyTopic, url: this.ntfyUrl };
+			const config = {
+				topic: this.ntfyTopic,
+				url: this.ntfyUrl,
+				pluginPath: PLUGIN_DIR,
+			};
 			fs.writeFileSync(AIDECK_CONFIG_PATH, JSON.stringify(config), "utf-8");
 		} catch {
 			// non-fatal
@@ -100,6 +105,10 @@ class SessionManager {
 			.getGlobalSettings<GlobalSettings>()
 			.then((settings) => {
 				this.migrateFromConfigFile(settings);
+				if (!settings.ntfyTopic) {
+					settings.ntfyTopic = generateTopic();
+					streamDeck.settings.setGlobalSettings(settings).catch(() => {});
+				}
 				this.applySettings(settings);
 			})
 			.catch(() => {});

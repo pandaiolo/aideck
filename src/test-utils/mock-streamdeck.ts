@@ -20,6 +20,9 @@ export function createMockStreamDeck() {
 			actions: {
 				registerAction: vi.fn(),
 			},
+			ui: {
+				onSendToPlugin: vi.fn(),
+			},
 			connect: vi.fn().mockResolvedValue(undefined),
 		},
 		action: () => (target: unknown) => target,

@@ -9,7 +9,7 @@ import { sortSessions } from "./sessions";
 
 const AIDECK_DIR = path.join(os.homedir(), ".claude", "aideck");
 const DEFAULT_CACHE_PATH = path.join(AIDECK_DIR, "cache.json");
-const STALE_TIMEOUT_MS = 5 * 60 * 1000;
+const STALE_TIMEOUT_MS = 14 * 24 * 60 * 60 * 1000;
 interface NtfyMessage {
 	event: string;
 	message?: string;

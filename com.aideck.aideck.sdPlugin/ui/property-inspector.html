@@ -65,9 +65,70 @@
 			text-transform: uppercase;
 			letter-spacing: 0.5px;
 		}
+		.subtitle {
+			color: #777;
+			font-size: 11px;
+			line-height: 1.4;
+			margin: 2px 0 6px;
+		}
+		.subtitle a {
+			color: #8ab4f8;
+			text-decoration: none;
+		}
+		.subtitle a:hover {
+			text-decoration: underline;
+		}
+		.status-row {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 8px 0;
+		}
+		.status-badge {
+			font-size: 11px;
+			padding: 2px 8px;
+			border-radius: 4px;
+			font-weight: 500;
+		}
+		.status-badge.installed {
+			color: #4CAF50;
+			background: rgba(76, 175, 80, 0.15);
+		}
+		.status-badge.not-installed {
+			color: #FF9800;
+			background: rgba(255, 152, 0, 0.15);
+		}
+		.btn {
+			background: #3a3a3a;
+			color: #ccc;
+			border: 1px solid #555;
+			border-radius: 4px;
+			padding: 4px 12px;
+			font-size: 11px;
+			cursor: pointer;
+		}
+		.btn:hover {
+			background: #444;
+		}
+		.btn-danger {
+			border-color: #c62828;
+			color: #ef9a9a;
+		}
+		.btn-danger:hover {
+			background: #3a2020;
+		}
 	</style>
 </head>
 <body>
+	<h3>Claude Code Hooks</h3>
+	<p class="subtitle">Remove hooks before uninstalling the plugin to keep your Claude Code settings clean.</p>
+	<div class="status-row">
+		<span id="hookStatus" class="status-badge">Checking...</span>
+		<button id="installHooksBtn" class="btn" style="display:none">Install Hooks</button>
+		<button id="removeHooksBtn" class="btn btn-danger" style="display:none">Remove Hooks</button>
+	</div>
+
+	<h3>Display</h3>
 	<div class="setting">
 		<input type="checkbox" id="openInDesktop" checked />
 		<label for="openInDesktop">Open sessions in Claude Desktop if available</label>
@@ -86,16 +147,6 @@
 		</select>
 	</div>
 
-	<h3>ntfy</h3>
-	<div class="setting">
-		<label for="ntfyTopic">Topic</label>
-		<input type="text" id="ntfyTopic" placeholder="your-secret-topic" />
-	</div>
-	<div class="setting">
-		<label for="ntfyUrl">Server URL</label>
-		<input type="text" id="ntfyUrl" placeholder="https://ntfy.sh" />
-	</div>
-
 	<h3>Status colors</h3>
 	<div class="color-setting">
 		<input type="color" id="colorAwaiting" value="#4CAF50" />
@@ -110,6 +161,17 @@
 		<label for="colorInactive">Inactive</label>
 	</div>
 
+	<h3>Internal Notifications</h3>
+	<p class="subtitle">Session updates are pushed via <a href="https://ntfy.sh" target="_blank">ntfy</a>, a simple pub/sub notification service. You can <a href="https://docs.ntfy.sh/install/" target="_blank">self-host</a> your own server for privacy.</p>
+	<div class="setting">
+		<label for="ntfyTopic">ntfy Topic</label>
+		<input type="text" id="ntfyTopic" placeholder="your-secret-topic" />
+	</div>
+	<div class="setting">
+		<label for="ntfyUrl">ntfy Server URL</label>
+		<input type="text" id="ntfyUrl" placeholder="https://ntfy.sh" />
+	</div>
+
 	<script>
 		const checkbox = document.getElementById("openInDesktop");
 		const singlePanelCb = document.getElementById("singlePanel");
@@ -119,19 +181,53 @@
 		const colorAwaiting = document.getElementById("colorAwaiting");
 		const colorWorking = document.getElementById("colorWorking");
 		const colorInactive = document.getElementById("colorInactive");
+		const hookStatusBadge = document.getElementById("hookStatus");
+		const installHooksBtn = document.getElementById("installHooksBtn");
+		const removeHooksBtn = document.getElementById("removeHooksBtn");
 
 		let ws;
 		let uuid;
+		let actionUUID;
 		let currentSettings = {};
 
-		function connectElgatoStreamDeckSocket(inPort, inPluginUUID, inRegisterEvent, inInfo) {
+		function updateHookStatusDisplay(status) {
+			if (status && status.fullyInstalled) {
+				hookStatusBadge.textContent = "Installed";
+				hookStatusBadge.className = "status-badge installed";
+				installHooksBtn.style.display = "none";
+				removeHooksBtn.style.display = "";
+			} else {
+				hookStatusBadge.textContent = "Not installed";
+				hookStatusBadge.className = "status-badge not-installed";
+				installHooksBtn.style.display = "";
+				removeHooksBtn.style.display = "none";
+			}
+		}
+
+		function sendToPlugin(command) {
+			if (ws && ws.readyState === WebSocket.OPEN && actionUUID) {
+				ws.send(JSON.stringify({
+					event: "sendToPlugin",
+					action: actionUUID,
+					context: uuid,
+					payload: { command: command }
+				}));
+			}
+		}
+
+		function connectElgatoStreamDeckSocket(inPort, inPluginUUID, inRegisterEvent, inInfo, inActionInfo) {
 			uuid = inPluginUUID;
+			try {
+				const actionInfoObj = JSON.parse(inActionInfo);
+				actionUUID = actionInfoObj.action;
+			} catch (e) {}
 
 			ws = new WebSocket("ws://127.0.0.1:" + inPort);
 
 			ws.onopen = function () {
 				ws.send(JSON.stringify({ event: inRegisterEvent, uuid: uuid }));
 				ws.send(JSON.stringify({ event: "getGlobalSettings", context: uuid }));
+				sendToPlugin("getHookStatus");
 			};
 
 			ws.onmessage = function (evt) {
@@ -146,6 +242,12 @@
 					colorAwaiting.value = currentSettings.colorAwaiting || "#4CAF50";
 					colorWorking.value = currentSettings.colorWorking || "#FFA726";
 					colorInactive.value = currentSettings.colorInactive || "#555555";
+				}
+				if (data.event === "sendToPropertyInspector") {
+					const payload = data.payload || {};
+					if (payload.hookStatus) {
+						updateHookStatusDisplay(payload.hookStatus);
+					}
 				}
 			};
 		}
@@ -176,6 +278,8 @@
 		colorAwaiting.addEventListener("input", saveSettings);
 		colorWorking.addEventListener("input", saveSettings);
 		colorInactive.addEventListener("input", saveSettings);
+		installHooksBtn.addEventListener("click", function () { sendToPlugin("installHooks"); });
+		removeHooksBtn.addEventListener("click", function () { sendToPlugin("removeHooks"); });
 	</script>
 </body>
 </html>

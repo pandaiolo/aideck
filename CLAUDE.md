@@ -48,16 +48,17 @@ No polling timer, no file watcher. Refresh is triggered solely by ntfy messages.
 
 ### Key Modules
 
-- **`plugin.ts`** — Entry point. Registers 4 Stream Deck actions with the SDK.
-- **`session-manager.ts`** — Central orchestrator. Manages pagination, global settings, and dispatches rendered images to action slots. Refreshes on ntfy messages only.
+- **`plugin.ts`** — Entry point. Registers 4 Stream Deck actions with the SDK. Calls `installHooks()` on startup for auto-setup. Handles property inspector messages for hook management via `streamDeck.ui.onSendToPlugin()`.
+- **`hook-installer.ts`** — Auto-installs Claude Code hooks on startup: copies bundled `aideck.sh` to `~/.claude/hooks/`, merges hook entries into `~/.claude/settings.json`, and provides `removeHooks()` for cleanup. Also exports `generateTopic()` for auto-generating ntfy topics.
+- **`session-manager.ts`** — Central orchestrator. Manages pagination, global settings, and dispatches rendered images to action slots. Auto-generates an ntfy topic on first run. Refreshes on ntfy messages only.
 - **`sessions.ts`** — Exports `Session`/`SessionStatus` types and `sortSessions()` utility.
 - **`renderer.ts`** — Pure SVG generators for all button types. Configurable font sizes (small/medium/large), status colors, and fade-out mask for text overflow.
-- **`ntfy.ts`** — HTTP streaming subscriber to ntfy.sh. Single source of truth for all sessions. Manages local cache (`~/.claude/aideck/cache.json`) for instant startup. Sessions go stale after 5 minutes without update.
+- **`ntfy.ts`** — HTTP streaming subscriber to ntfy.sh. Single source of truth for all sessions. Manages local cache (`~/.claude/aideck/cache.json`) for instant startup. Sessions go stale after 14 days without update.
 - **`actions/`** — One file per Stream Deck action (`open-panel`, `back`, `session-slot`, `page-nav`). Each is a class extending `SingletonAction` with `onWillAppear`/`onKeyDown`/`onWillDisappear` lifecycle hooks.
 
-### Hook Script (`hooks/aideck.sh`)
+### Hook Script (`com.aideck.aideck.sdPlugin/hooks/aideck.sh`)
 
-Bash script invoked by Claude Code on SessionStart, UserPromptSubmit, Stop, PreCompact, PostCompact, Notification, and SessionEnd events. Receives JSON on stdin, reads ntfy topic from `~/.claude/hooks/aideck.json`, and pushes session state to ntfy. Also resolves the remote session URL and custom session name from JSONL transcripts. Installed via `~/.claude/settings.json` hook configuration.
+POSIX shell script bundled inside the plugin directory. On startup, `hook-installer.ts` copies it to `~/.claude/hooks/aideck.sh` and adds entries to `~/.claude/settings.json`. Invoked by Claude Code on SessionStart, UserPromptSubmit, Stop, PreCompact, PostCompact, Notification, and SessionEnd events. Receives JSON on stdin, reads ntfy topic from `~/.claude/hooks/aideck.json`, and pushes session state to ntfy. Also resolves the remote session URL and custom session name from JSONL transcripts.
 
 **Hook gotchas:**
 - Hook input only provides `session_id`, `cwd`, `transcript_path`, `hook_event_name` — no `session_name` or remote URL. Those must come from the transcript.

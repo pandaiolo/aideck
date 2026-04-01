@@ -39,6 +39,10 @@ vi.mock("./ntfy", () => ({
 	},
 }));
 
+vi.mock("./hook-installer", () => ({
+	generateTopic: vi.fn().mockReturnValue("aideck-mocktopic12345678"),
+}));
+
 vi.mock("node:child_process", () => ({
 	execFile: vi.fn(),
 }));
@@ -119,6 +123,9 @@ async function getSessionManager() {
 			getSortedSessions: vi.fn().mockReturnValue([]),
 			reconfigure: vi.fn(),
 		},
+	}));
+	vi.doMock("./hook-installer", () => ({
+		generateTopic: vi.fn().mockReturnValue("aideck-mocktopic12345678"),
 	}));
 	vi.doMock("node:child_process", () => ({
 		execFile: vi.fn(),
@@ -475,5 +482,137 @@ describe("registration lifecycle", () => {
 	it("getSessionForNavSlot returns undefined in normal mode", async () => {
 		const { sessionManager } = await getSessionManager();
 		expect(sessionManager.getSessionForNavSlot("prev")).toBeUndefined();
+	});
+});
+
+// ── Auto-topic generation ────────────────────────────────
+
+describe("auto-topic generation", () => {
+	it("generates topic when none configured", async () => {
+		vi.resetModules();
+		const mockSetGlobalSettings = vi.fn().mockResolvedValue(undefined);
+		vi.doMock("@elgato/streamdeck", () => ({
+			default: {
+				logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn() },
+				settings: {
+					getGlobalSettings: vi.fn().mockResolvedValue({}),
+					onDidReceiveGlobalSettings: vi.fn(),
+					setGlobalSettings: mockSetGlobalSettings,
+				},
+				profiles: { switchToProfile: vi.fn().mockResolvedValue(undefined) },
+			},
+		}));
+		vi.doMock("./sessions", () => ({
+			sortSessions: vi.fn((s: Session[]) => s),
+		}));
+		vi.doMock("./renderer", () => ({
+			renderSessionKey: vi.fn().mockReturnValue("data:session"),
+			renderNavKey: vi.fn().mockReturnValue("data:nav"),
+			renderEmptyKey: vi.fn().mockReturnValue("data:empty"),
+			renderOpenPanelKey: vi.fn().mockReturnValue("data:panel"),
+			DEFAULT_COLORS: {
+				awaiting: "#4CAF50",
+				working: "#FFA726",
+				inactive: "#555555",
+			},
+		}));
+		vi.doMock("./ntfy", () => ({
+			ntfySubscriber: {
+				start: vi.fn(),
+				stop: vi.fn(),
+				getRemoteSessions: vi.fn().mockReturnValue(new Map()),
+				getSortedSessions: vi.fn().mockReturnValue([]),
+				reconfigure: vi.fn(),
+			},
+		}));
+		vi.doMock("./hook-installer", () => ({
+			generateTopic: vi.fn().mockReturnValue("aideck-mocktopic12345678"),
+		}));
+		vi.doMock("node:child_process", () => ({ execFile: vi.fn() }));
+		vi.doMock("node:fs", () => ({
+			default: {
+				existsSync: vi.fn().mockReturnValue(false),
+				writeFileSync: vi.fn(),
+				mkdirSync: vi.fn(),
+				readFileSync: vi.fn().mockImplementation(() => {
+					throw new Error("ENOENT");
+				}),
+			},
+		}));
+		vi.doMock("node:os", () => ({
+			default: { homedir: () => "/mock/home" },
+		}));
+
+		const mod = await import("./session-manager");
+		mod.sessionManager.start();
+		await vi.waitFor(() => {
+			expect(mockSetGlobalSettings).toHaveBeenCalledWith(
+				expect.objectContaining({ ntfyTopic: "aideck-mocktopic12345678" }),
+			);
+		});
+	});
+
+	it("does not overwrite existing topic", async () => {
+		vi.resetModules();
+		const mockSetGlobalSettings = vi.fn().mockResolvedValue(undefined);
+		vi.doMock("@elgato/streamdeck", () => ({
+			default: {
+				logger: { info: vi.fn(), error: vi.fn(), warn: vi.fn() },
+				settings: {
+					getGlobalSettings: vi
+						.fn()
+						.mockResolvedValue({ ntfyTopic: "my-custom-topic" }),
+					onDidReceiveGlobalSettings: vi.fn(),
+					setGlobalSettings: mockSetGlobalSettings,
+				},
+				profiles: { switchToProfile: vi.fn().mockResolvedValue(undefined) },
+			},
+		}));
+		vi.doMock("./sessions", () => ({
+			sortSessions: vi.fn((s: Session[]) => s),
+		}));
+		vi.doMock("./renderer", () => ({
+			renderSessionKey: vi.fn().mockReturnValue("data:session"),
+			renderNavKey: vi.fn().mockReturnValue("data:nav"),
+			renderEmptyKey: vi.fn().mockReturnValue("data:empty"),
+			renderOpenPanelKey: vi.fn().mockReturnValue("data:panel"),
+			DEFAULT_COLORS: {
+				awaiting: "#4CAF50",
+				working: "#FFA726",
+				inactive: "#555555",
+			},
+		}));
+		vi.doMock("./ntfy", () => ({
+			ntfySubscriber: {
+				start: vi.fn(),
+				stop: vi.fn(),
+				getRemoteSessions: vi.fn().mockReturnValue(new Map()),
+				getSortedSessions: vi.fn().mockReturnValue([]),
+				reconfigure: vi.fn(),
+			},
+		}));
+		vi.doMock("./hook-installer", () => ({
+			generateTopic: vi.fn().mockReturnValue("aideck-shouldnotbeused"),
+		}));
+		vi.doMock("node:child_process", () => ({ execFile: vi.fn() }));
+		vi.doMock("node:fs", () => ({
+			default: {
+				existsSync: vi.fn().mockReturnValue(false),
+				writeFileSync: vi.fn(),
+				mkdirSync: vi.fn(),
+				readFileSync: vi.fn().mockImplementation(() => {
+					throw new Error("ENOENT");
+				}),
+			},
+		}));
+		vi.doMock("node:os", () => ({
+			default: { homedir: () => "/mock/home" },
+		}));
+
+		const mod = await import("./session-manager");
+		mod.sessionManager.start();
+		// setGlobalSettings should NOT be called since topic already exists
+		await new Promise((r) => setTimeout(r, 10));
+		expect(mockSetGlobalSettings).not.toHaveBeenCalled();
 	});
 });

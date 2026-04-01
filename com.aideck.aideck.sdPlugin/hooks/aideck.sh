@@ -15,6 +15,25 @@ done
 CONFIG_FILE="$HOME/.claude/hooks/aideck.json"
 [ -f "$CONFIG_FILE" ] || exit 0
 
+# Check if plugin is still installed — self-cleanup if removed
+PLUGIN_PATH=$(jq -r '.pluginPath // empty' "$CONFIG_FILE" 2>/dev/null)
+if [ -n "$PLUGIN_PATH" ] && [ ! -d "$PLUGIN_PATH" ]; then
+  SETTINGS="$HOME/.claude/settings.json"
+  if [ -f "$SETTINGS" ]; then
+    jq '
+      if .hooks then
+        .hooks |= with_entries(
+          .value |= map(select(.hooks | all(.command | contains("aideck.sh") | not)))
+        )
+        | .hooks |= with_entries(select(.value | length > 0))
+        | if (.hooks | length) == 0 then del(.hooks) else . end
+      else . end
+    ' "$SETTINGS" > "${SETTINGS}.tmp" && mv "${SETTINGS}.tmp" "$SETTINGS"
+  fi
+  rm -f "$CONFIG_FILE" "$0"
+  exit 0
+fi
+
 # Read hook input from stdin
 INPUT=$(cat)
 

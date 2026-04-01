@@ -100,7 +100,7 @@ describe("loadCache", () => {
 
 	it("filters stale sessions from cache on access", () => {
 		vi.useFakeTimers();
-		const staleTime = Date.now() - 6 * 60 * 1000; // 6 minutes ago
+		const staleTime = Date.now() - 15 * 24 * 60 * 60 * 1000; // 15 days ago
 		const cache = {
 			sessions: {
 				stale: {
@@ -312,7 +312,7 @@ describe("getSortedSessions", () => {
 		sub.handleMessage(makeMessage(baseState));
 		expect(sub.getSortedSessions()).toHaveLength(1);
 
-		vi.advanceTimersByTime(5 * 60 * 1000 + 1);
+		vi.advanceTimersByTime(14 * 24 * 60 * 60 * 1000 + 1);
 		expect(sub.getSortedSessions()).toHaveLength(0);
 		vi.useRealTimers();
 	});
@@ -347,7 +347,7 @@ describe("getRemoteSessions", () => {
 		sub.handleMessage(makeMessage(baseState));
 		expect(sub.getRemoteSessions().size).toBe(1);
 
-		vi.advanceTimersByTime(5 * 60 * 1000 + 1);
+		vi.advanceTimersByTime(14 * 24 * 60 * 60 * 1000 + 1);
 		expect(sub.getRemoteSessions().size).toBe(0);
 	});
 
@@ -356,7 +356,7 @@ describe("getRemoteSessions", () => {
 		(sub as unknown as { onUpdate: () => void }).onUpdate = vi.fn();
 		sub.handleMessage(makeMessage(baseState));
 
-		vi.advanceTimersByTime(4 * 60 * 1000);
+		vi.advanceTimersByTime(13 * 24 * 60 * 60 * 1000);
 		expect(sub.getRemoteSessions().size).toBe(1);
 	});
 
@@ -365,9 +365,9 @@ describe("getRemoteSessions", () => {
 		(sub as unknown as { onUpdate: () => void }).onUpdate = vi.fn();
 
 		sub.handleMessage(makeMessage({ ...baseState, sessionId: "old" }));
-		vi.advanceTimersByTime(4 * 60 * 1000);
+		vi.advanceTimersByTime(13 * 24 * 60 * 60 * 1000);
 		sub.handleMessage(makeMessage({ ...baseState, sessionId: "new" }));
-		vi.advanceTimersByTime(1 * 60 * 1000 + 1);
+		vi.advanceTimersByTime(1 * 24 * 60 * 60 * 1000 + 1);
 
 		const sessions = sub.getRemoteSessions();
 		expect(sessions.has("old")).toBe(false);
